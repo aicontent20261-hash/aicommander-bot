@@ -19,8 +19,11 @@ genai.configure(api_key=API_KEY)
 
 # ВАЖЛИВО: Використовуй саме цю назву моделі
 # Замість простого GenerativeModel спробуй так:
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+# 1. Спробуй вказати модель без префіксів, але з повним ім'ям
+model = genai.GenerativeModel('models/gemini-1.5-flash')
+
+# 2. Якщо помилка не зникне, спробуй цей варіант (він найбільш універсальний):
+# model = genai.GenerativeModel('gemini-1.5-flash-latest')
 )
 
 # А в самому обробнику повідомлень (там де try/except) змінити рядок генерації на:
