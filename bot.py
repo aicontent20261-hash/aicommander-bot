@@ -4,7 +4,43 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.utils.keyboard import ReplyKeyboardBuilder # ОСЬ ЦЕЙ ІМПОРТ БУВ ПОТРІБЕН
 import google.generativeai as genai
+import os
+import asyncio
+import google.generativeai as genai
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
 
+# 1. Твій токен Telegram і API ключ Gemini
+TOKEN = "8539700014:AAE9Wl5lFJ-__c7XKZI4x2YTo7U8mFUf2e4"
+API_KEY = "AIzaSyBMiTc6e24o5DD1sZH7Sc23pADX4k9rTZk"
+
+# 2. Налаштування Gemini
+genai.configure(api_key=API_KEY)
+
+# ВАЖЛИВО: Використовуй саме цю назву моделі
+model = genai.GenerativeModel('gemini-1.5-flash')
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
+
+@dp.message(Command("start"))
+async def start(message: types.Message):
+    await message.answer("Вітаю у AiCommander! Бот запущено 24/7. Напишіть мені щось.")
+
+@dp.message()
+async def chat(message: types.Message):
+    try:
+        # 3. Виклик генерації
+        response = model.generate_content(message.text)
+        await message.answer(response.text)
+    except Exception as e:
+        await message.answer(f"⚠️ Помилка: {e}")
+
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
 # --- ДАНІ ---
 TOKEN = "8539700014:AAE9Wl5lFJ-__c7XKZI4x2YTo7U8mFUf2e4"
 GEMINI_KEY = "AIzaSyBMiTc6e24o5DD1sZH7Sc23pADX4k9rTZk"
