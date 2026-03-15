@@ -18,7 +18,13 @@ API_KEY = "AIzaSyBMiTc6e24o5DD1sZH7Sc23pADX4k9rTZk"
 genai.configure(api_key=API_KEY)
 
 # ВАЖЛИВО: Використовуй саме цю назву моделі
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Замість простого GenerativeModel спробуй так:
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+)
+
+# А в самому обробнику повідомлень (там де try/except) змінити рядок генерації на:
+response = model.generate_content(message.text)
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
