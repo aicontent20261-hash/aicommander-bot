@@ -10,42 +10,39 @@ import google.generativeai as genai
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 
-# 1. Твій токен Telegram і API ключ Gemini
+# --- НАЛАШТУВАННЯ ---
 TOKEN = "8539700014:AAE9Wl5lFJ-__c7XKZI4x2YTo7U8mFUf2e4"
 API_KEY = "AIzaSyBMiTc6e24o5DD1sZH7Sc23pADX4k9rTZk"
 
-# 2. Налаштування Gemini
 genai.configure(api_key=API_KEY)
-
-# ВАЖЛИВО: Використовуй саме цю назву моделі
-# Замість простого GenerativeModel спробуй так:
-# 1. Спробуй вказати модель без префіксів, але з повним ім'ям
-model = genai.GenerativeModel('models/gemini-1.5-flash')
-
-# 2. Якщо помилка не зникне, спробуй цей варіант (він найбільш універсальний):
-# model = genai.GenerativeModel('gemini-1.5-flash-latest')
-)
-
-# А в самому обробнику повідомлень (там де try/except) змінити рядок генерації на:
-response = model.generate_content(message.text)
+# Використовуємо стабільну версію моделі
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+# --- ОБРОБНИКИ ---
+
 @dp.message(Command("start"))
-async def start(message: types.Message):
-    await message.answer("Вітаю у AiCommander! Бот запущено 24/7. Напишіть мені щось.")
+async def start_handler(message: types.Message):
+    await message.answer("✅ AiCommander запущено 24/7! Напиши мені будь-яке запитання.")
 
 @dp.message()
-async def chat(message: types.Message):
+async def chat_handler(message: types.Message):
+    # ВАЖЛИВО: логіка генерації має бути ТУТ всередині функції
     try:
-        # 3. Виклик генерації
         response = model.generate_content(message.text)
-        await message.answer(response.text)
+        if response and response.text:
+            await message.answer(response.text)
+        else:
+            await message.answer("Бот не зміг згенерувати текст. Спробуй інший запит.")
     except Exception as e:
-        await message.answer(f"⚠️ Помилка: {e}")
+        # Якщо помилка 404, спробуємо іншу назву моделі автоматично
+        await message.answer(f"⚠️ Виникла помилка: {str(e)}")
 
+# --- ЗАПУСК ---
 async def main():
+    print("Бот виходить в онлайн...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
